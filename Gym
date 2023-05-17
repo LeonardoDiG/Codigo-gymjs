@@ -1,0 +1,110 @@
+const formulario = document.getElementById("formulario")
+const inputNombre = document.getElementById("input-nombre")
+const inputApellido = document.getElementById("input-apellido")
+const inputDNI = document.getElementById("input-dni")
+const listaDeClientes = document.getElementById("lista-de-clientes")
+
+let arrayDeClientes = [] //aca guardo mis clientes
+
+const hoy = new Date().toLocaleDateString()
+
+let clienteAInscribir = {
+    nombre: "",
+    apellido: "",
+    dni: "",
+    fechaDeInscripcion: hoy
+}
+
+function eliminarCliente(dni){
+    arrayDeClientes= arrayDeClientes.filter((cliente) => cliente.dni !== dni)
+    guardarEnAlmacenamientoLocal
+    
+    renderizarClientes()
+}
+
+function verificarMembresia(fechaDeInscripcion){
+    const fechaPorPartes = fechaDeInscripcion.split("/")
+    const [dia, mes, anio] = fechaPorPartes
+
+    const fechaDeInicio = new Date(`${mes}/${dia}/${anio}`).getTime()
+    const fechaActual = new Date ().getTime()
+
+    const duracionDeLaMembresia = 60
+
+    //const diferenciaEnMilisegundos = fechaActual - fechaDeInicio
+
+    const vencimientoMembresia = Math.floor((fechaActual-fechaDeInicio) / 1000 / 60 / 60 / 24 / duracionDeLaMembresia)
+
+    if(vencimientoMembresia>0) {
+        alert("Membresia vencida!")
+        return
+    }
+
+    alert("Acceso concedido!")
+}
+
+function renovarMembresia(dni){
+    const indiceDelCliente = arrayDeClientes.findIndex((cliente) => cliente.dni === dni)
+
+    const nuevaFecha = new Date ().toLocaleDateString
+
+    arrayDeClientes [indiceDelCliente] = { 
+        ...arrayDeClientes[indiceDelCliente],
+        fechaDeInscripcion: nuevaFecha
+    }
+
+    guardarEnAlmacenamientoLocal()
+    renderizarClientes()
+
+    alert("Membresia actualizada!")
+}
+
+function renderizarClientes(){
+    listaDeClientes.innerHTML=``
+
+    arrayDeClientes.forEach((cliente) => {
+        const li = document.createElement("li") //list item
+        
+        li.innerHTML = `
+        <p><b> Nombre Completo: </b> ${cliente.nombre} ${cliente.apellido}</p>
+        <p><b> DNI: </b> ${cliente.dni} </p>
+        <p><b> Fecha de Inscripcion: </b> ${cliente.fechaDeInscripcion} </p>
+        <button onclick="eliminarCliente('${cliente.dni}')">Eliminar</button>
+        <button onclick="verificarMembresia('${cliente.fechaDeInscripcion}')">Acceder</button>
+        <button onclick="renovarMembresia('${cliente.dni}')">Renovar Membresia</button>
+        `
+
+        listaDeClientes.appendChild(li)
+    })
+}
+
+formulario.addEventListener("submit", (evento) => {
+    evento.preventDefault()
+
+    clienteAInscribir = {
+        ...clienteAInscribir,
+        nombre: inputNombre.value,
+        apellido: inputApellido.value,
+        dni: inputDNI.value
+    }
+
+    arrayDeClientes.push(clienteAInscribir)
+    
+
+    renderizarClientes()
+
+    formulario.reset()  //Esto reinicia los valores del formulario.
+})
+
+function guardarEnAlmacenamientoLocal(){
+    localStorage.setItem("clientes", JSON.stringify(arrayDeClientes))
+}
+
+function verificarAlmacenamientoLocal(){
+    const clientesDesdeElAlmacenamiento = localStorage.getItem("clientes")
+    arrayDeClientes = JSON.parse(clientesDesdeElAlmacenamiento)
+
+    renderizarClientes()
+}
+
+verificarAlmacenamientoLocal()
