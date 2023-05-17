@@ -12,7 +12,7 @@ let clienteAInscribir = {
     nombre: "",
     apellido: "",
     dni: "",
-    fechaDeInscripcion: hoy
+    fechaDeCompra: hoy
 }
 
 function eliminarCliente(dni){
@@ -20,43 +20,6 @@ function eliminarCliente(dni){
     guardarEnAlmacenamientoLocal
     
     renderizarClientes()
-}
-
-function verificarMembresia(fechaDeInscripcion){
-    const fechaPorPartes = fechaDeInscripcion.split("/")
-    const [dia, mes, anio] = fechaPorPartes
-
-    const fechaDeInicio = new Date(`${mes}/${dia}/${anio}`).getTime()
-    const fechaActual = new Date ().getTime()
-
-    const duracionDeLaMembresia = 60
-
-    //const diferenciaEnMilisegundos = fechaActual - fechaDeInicio
-
-    const vencimientoMembresia = Math.floor((fechaActual-fechaDeInicio) / 1000 / 60 / 60 / 24 / duracionDeLaMembresia)
-
-    if(vencimientoMembresia>0) {
-        alert("Membresia vencida!")
-        return
-    }
-
-    alert("Acceso concedido!")
-}
-
-function renovarMembresia(dni){
-    const indiceDelCliente = arrayDeClientes.findIndex((cliente) => cliente.dni === dni)
-
-    const nuevaFecha = new Date ().toLocaleDateString
-
-    arrayDeClientes [indiceDelCliente] = { 
-        ...arrayDeClientes[indiceDelCliente],
-        fechaDeInscripcion: nuevaFecha
-    }
-
-    guardarEnAlmacenamientoLocal()
-    renderizarClientes()
-
-    alert("Membresia actualizada!")
 }
 
 function renderizarClientes(){
@@ -68,10 +31,8 @@ function renderizarClientes(){
         li.innerHTML = `
         <p><b> Nombre Completo: </b> ${cliente.nombre} ${cliente.apellido}</p>
         <p><b> DNI: </b> ${cliente.dni} </p>
-        <p><b> Fecha de Inscripcion: </b> ${cliente.fechaDeInscripcion} </p>
+        <p><b> Fecha de Compra: </b> ${cliente.fechaDeCompra} </p>
         <button onclick="eliminarCliente('${cliente.dni}')">Eliminar</button>
-        <button onclick="verificarMembresia('${cliente.fechaDeInscripcion}')">Acceder</button>
-        <button onclick="renovarMembresia('${cliente.dni}')">Renovar Membresia</button>
         `
 
         listaDeClientes.appendChild(li)
